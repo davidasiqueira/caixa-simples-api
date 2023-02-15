@@ -7,9 +7,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './authStrategy/jwt-auth.guard';
 
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './authStrategy/local-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -17,16 +17,16 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
+    //salvar o token no banco token + timestamp
+    //implementar cron de remover os tokens antigos que não estão válidos
     return req.user;
   }
 
-  //refatorar pq assim tendo um token valido tenho acesso aos dados de todos os usuários
-  //mexer quando terminar de implementtar o backend e afins
   @UseGuards(JwtAuthGuard)
   @Get('auth/isvalid/')
   async isLogged(@Query('userId') id) {
-    console.dir(id)
     const user = await this.usersService.findOneById(id);
+    //vou ter que validar aqui se o token pertence ao usuário informado
     return user;
   }
 }

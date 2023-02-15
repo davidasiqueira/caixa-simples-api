@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/users/schemas/userSchema';
 
 @Injectable()
 export class AuthService {
@@ -18,17 +19,18 @@ export class AuthService {
   }
 
   //aqui que meche no retorno do /auth
-  private async login(user: any) {
+  private async login(user: User) {
     const payload = {
-      username: user.username,
-      userId: user.userId,
+      username: user.email,
+      Id: user._id,
     };
     return {
       access_token: this.jwtService.sign(payload),
       user: {
-        userId: user.userId,
+        id: user._id,
+        name: user.name,
         avatar: user.avatar,
-        username: user.username,
+        email: user.email,
       },
     };
   }

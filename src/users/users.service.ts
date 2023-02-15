@@ -1,32 +1,33 @@
 import { Injectable } from '@nestjs/common';
-
-// This should be a real class/interface representing a user entity
-export type User = any;
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId } from 'mongoose';
+import { CreateUserDto } from './dtos/user.dto';
+import { User, UserDocument } from './schemas/userSchema';
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'davidsiqueira.hog@gmail.com',
-      password: '1234567890',
-      avatar: 'https://github.com/davidasiqueira.png',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-      avatar: 'https://github.com/davidasiqueira.png',
-    },
-  ];
+  //fazer o crud do mongo e afins
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find((user) => user.username === username);
+  async save(user: CreateUserDto): Promise<User> {
+    const createdUser = new this.userModel(user);
+    return createdUser.save();
   }
-  async findOneById(id: string): Promise<User | undefined> {
-    const { username, avatar } = this.users.find(
-      (user) => user.userId === Number(id),
-    );
-    return { username, avatar };
+
+  async findOne(email: string): Promise<User> {
+    return this.userModel.findOne({ email: email });
   }
+
+  async findOneById(id: ObjectId): Promise<User> {
+    return this.userModel.findById(id);
+  }
+  // async findOne(username: string): Promise<User | undefined> {
+  //   return this.users.find((user) => user.username === username);
+  // }
+  // async findOneById(id: string): Promise<User | undefined> {
+  //   const { username, avatar } = this.users.find(
+  //     (user) => user.userId === Number(id),
+  //   );
+  //   return { username, avatar };
+  // }
 }
