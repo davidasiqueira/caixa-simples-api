@@ -25,14 +25,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('auth/isvalid/')
   async isLogged(@Query('userId') id, @Headers() headers) {
-    const userInfo = await this.usersService.validateToken(
+    console.log(headers['authorization'].split(' ')[1]);
+    return await this.usersService.validateToken(
       id,
       headers['authorization'].split(' ')[1],
     );
-    console.log(headers['authorization'].split(' ')[1]);
-    if (!userInfo) {
-      return 200;
-    }
-    return userInfo;
   }
 }
