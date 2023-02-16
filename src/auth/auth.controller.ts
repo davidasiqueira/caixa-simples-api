@@ -7,7 +7,6 @@ import {
   Query,
   Headers,
   Res,
-  HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UsersService } from 'src/users/users.service';
@@ -25,17 +24,14 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('auth/isvalid/')
-  async isLogged(
-    @Query('userId') id,
-    @Res() res: Response,
-    @Headers() headers,
-  ) {
+  async isLogged(@Query('userId') id, @Headers() headers) {
     const userInfo = await this.usersService.validateToken(
       id,
       headers['authorization'].split(' ')[1],
     );
+    console.log(headers['authorization'].split(' ')[1]);
     if (!userInfo) {
-      return 400;
+      return 200;
     }
     return userInfo;
   }
