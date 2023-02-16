@@ -35,9 +35,7 @@ export class AuthController {
       headers['authorization'].split(' ')[1],
     );
     if (!userInfo) {
-      console.dir(userInfo);
-      res.status(HttpStatus.UNAUTHORIZED);
-      return;
+      return 400;
     }
     return userInfo;
   }

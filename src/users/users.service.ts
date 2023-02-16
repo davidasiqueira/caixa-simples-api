@@ -36,7 +36,7 @@ export class UsersService {
     }
     const foundToken = user.token.find((obj) => obj.token == token1);
     if (!foundToken) {
-      return 401;
+      return;
     } else {
       return { name: user.name, avatar: user.avatar };
     }
