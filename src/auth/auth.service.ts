@@ -24,8 +24,13 @@ export class AuthService {
       username: user.email,
       Id: user._id,
     };
+
+    //vai obter o token e salvar ele no banco junto com a data que ele foi salvo
+    const token = await this.jwtService.sign(payload);
+    this.usersService.saveToken(user._id, token);
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: token,
       user: {
         id: user._id,
         name: user.name,

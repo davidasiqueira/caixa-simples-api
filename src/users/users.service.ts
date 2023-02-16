@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dtos/user.dto';
@@ -21,13 +21,33 @@ export class UsersService {
   async findOneById(id: ObjectId): Promise<User> {
     return this.userModel.findById(id);
   }
-  // async findOne(username: string): Promise<User | undefined> {
-  //   return this.users.find((user) => user.username === username);
-  // }
-  // async findOneById(id: string): Promise<User | undefined> {
-  //   const { username, avatar } = this.users.find(
-  //     (user) => user.userId === Number(id),
-  //   );
-  //   return { username, avatar };
-  // }
+
+  async saveToken(id: ObjectId, token1: string): Promise<User> {
+    return await this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { $addToSet: { token: { token: token1, createdAt: Date.now() } } },
+    );
+  }
+
+  async validateToken(id: ObjectId, token1: string) {
+    const user = await this.userModel.findById(id);
+    if (user.token.length > 4) {
+      this.revokeToken(id);
+    }
+    const foundToken = user.token.find((obj) => obj.token == token1);
+    if (!foundToken) {
+      return HttpStatus.UNAUTHORIZED;
+    } else {
+      return { name: user.name, avatar: user.avatar };
+    }
+  }
+
+  private async revokeToken(id: ObjectId) {
+    const expiredData = Date.now() - 86400000;
+
+    return await this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { $pull: { token: { createdAt: { $lt: expiredData } } } },
+    );
+  }
 }

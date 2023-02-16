@@ -7,7 +7,10 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     AuthModule,
     UsersModule,
-    MongooseModule.forRoot(process.env.MONGO_CONECTION_STRING),
+    MongooseModule.forRoot(
+      process.env.MONGO_CONECTION_STRING ||
+        'mongodb+srv://david:1GA6Rx77f8APLaDp@cluster0.mpyame7.mongodb.net/?retryWrites=true&w=majority',
+    ),
   ],
 })
 export class AppModule {}
