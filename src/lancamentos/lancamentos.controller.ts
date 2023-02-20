@@ -12,7 +12,7 @@ import { LancamentosService } from './lancamentos.service';
 import { CreateLancamentoDto } from './dto/create-lancamento.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/authStrategy/jwt-auth.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()
 @ApiTags('Lancamentos')
@@ -41,6 +41,7 @@ export class LancamentosController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'userId' })
   @Get('/all/:userId')
   async findAllByUserId(@Param('userId') userId, @Headers() headers) {
     const isValid = await this.authService.validateToken(
@@ -55,6 +56,8 @@ export class LancamentosController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'userId' })
+  @ApiParam({ name: 'id' })
   @Delete(':id/:userId')
   async remove(
     @Param('id') id: string,
