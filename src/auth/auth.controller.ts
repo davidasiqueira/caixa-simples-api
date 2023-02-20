@@ -7,10 +7,13 @@ import {
   Query,
   Headers,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './authStrategy/jwt-auth.guard';
 import { LocalAuthGuard } from './authStrategy/local-auth.guard';
 
+@ApiBearerAuth()
+@ApiTags('Auth')
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}

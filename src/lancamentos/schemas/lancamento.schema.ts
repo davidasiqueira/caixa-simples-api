@@ -8,7 +8,7 @@ export class Lancamento {
   _id: ObjectId;
 
   @Prop()
-  userId: ObjectId;
+  userId: string;
 
   @Prop()
   value: number;
