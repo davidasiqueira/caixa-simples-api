@@ -8,7 +8,6 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './authStrategy/jwt.strategy';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/users/schemas/userSchema';
-import { JwtAuthGuard } from './authStrategy/jwt-auth.guard';
 
 @Module({
   imports: [
