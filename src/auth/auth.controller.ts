@@ -6,11 +6,13 @@ import {
   Get,
   Query,
   Headers,
+  Body,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './authStrategy/jwt-auth.guard';
 import { LocalAuthGuard } from './authStrategy/local-auth.guard';
+import { LoginDto } from './swaggerDtos/loginDto';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -19,11 +21,12 @@ export class AuthController {
   constructor(private authService: AuthService) {}
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
+  async login(@Request() req, @Body() body: LoginDto) {
     return req.user;
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiQuery({ name: 'userId' })
   @Get('auth/isvalid/')
   async isLogged(@Query('userId') id, @Headers() headers) {
     return await this.authService.validateToken(
