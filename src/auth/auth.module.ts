@@ -6,6 +6,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './authStrategy/jwt.strategy';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from 'src/users/schemas/userSchema';
+import { JwtAuthGuard } from './authStrategy/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -15,6 +18,7 @@ import { JwtStrategy } from './authStrategy/jwt.strategy';
       secret: process.env.JWT_SECRET || 'teste 123',
       signOptions: { expiresIn: '1d' },
     }),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],

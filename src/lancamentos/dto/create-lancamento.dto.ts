@@ -1,11 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
-import { User } from 'src/users/schemas/userSchema';
 
 export class CreateLancamentoDto {
   @ApiProperty()
   @IsNotEmpty()
-  user: User;
+  userId: string;
 
   @ApiProperty()
   @IsNotEmpty()

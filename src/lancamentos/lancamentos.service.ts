@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateLancamentoDto } from './dto/create-lancamento.dto';
-import { UpdateLancamentoDto } from './dto/update-lancamento.dto';
+import { Lancamento, LancamentoDocument } from './schemas/lancamento.schema';
 
 @Injectable()
 export class LancamentosService {
-  create(createLancamentoDto: CreateLancamentoDto) {
-    return 'This action adds a new lancamento';
+  constructor(
+    @InjectModel(Lancamento.name)
+    private LancamentoModel: Model<LancamentoDocument>,
+  ) {}
+  async create(createLancamentoDto: CreateLancamentoDto): Promise<Lancamento> {
+    const CreatedLancamento = new this.LancamentoModel(createLancamentoDto);
+    return CreatedLancamento.save();
   }
 
-  findAll() {
-    return `This action returns all lancamentos`;
+  async findAllByUserId(userId: string) {
+    return this.LancamentoModel.find({ userId: userId });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} lancamento`;
-  }
-
-  update(id: number, updateLancamentoDto: UpdateLancamentoDto) {
-    return `This action updates a #${id} lancamento`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} lancamento`;
+  async remove(id: string) {
+    try {
+      await this.LancamentoModel.findByIdAndDelete({ _id: id });
+    } catch (err) {
+      return err;
+    }
+    return 'deleted';
   }
 }

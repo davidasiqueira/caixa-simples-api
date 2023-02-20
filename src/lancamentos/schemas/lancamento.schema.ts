@@ -1,15 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
-import { User } from 'src/users/schemas/userSchema';
+import { HydratedDocument, ObjectId } from 'mongoose';
 
-export type UserDocument = HydratedDocument<Lancamento>;
+export type LancamentoDocument = HydratedDocument<Lancamento>;
 
 @Schema()
 export class Lancamento {
   _id: ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  user: User;
+  @Prop()
+  userId: ObjectId;
 
   @Prop()
   value: number;
@@ -25,4 +24,4 @@ export class Lancamento {
   data: number;
 }
 
-export const UserSchema = SchemaFactory.createForClass(Lancamento);
+export const LancamentoSchema = SchemaFactory.createForClass(Lancamento);

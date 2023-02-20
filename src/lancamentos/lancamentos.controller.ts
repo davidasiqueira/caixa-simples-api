@@ -3,43 +3,69 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { LancamentosService } from './lancamentos.service';
 import { CreateLancamentoDto } from './dto/create-lancamento.dto';
-import { UpdateLancamentoDto } from './dto/update-lancamento.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/authStrategy/jwt-auth.guard';
 
 @Controller('lancamentos')
 export class LancamentosController {
-  constructor(private readonly lancamentosService: LancamentosService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly lancamentosService: LancamentosService,
+  ) {}
 
-  @Post()
-  create(@Body() createLancamentoDto: CreateLancamentoDto) {
-    return this.lancamentosService.create(createLancamentoDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.lancamentosService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.lancamentosService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateLancamentoDto: UpdateLancamentoDto,
+  @UseGuards(JwtAuthGuard)
+  @Post('/create')
+  async create(
+    @Body() createLancamentoDto: CreateLancamentoDto,
+    @Headers() headers,
   ) {
-    return this.lancamentosService.update(+id, updateLancamentoDto);
+    const isValid = await this.authService.validateToken(
+      createLancamentoDto.userId as any,
+      headers['authorization'].split(' ')[1],
+    );
+    if (isValid) {
+      return this.lancamentosService.create(createLancamentoDto);
+    } else {
+      return;
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.lancamentosService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @Get('/all/:userId')
+  async findAllByUserId(@Param('userId') userId, @Headers() headers) {
+    const isValid = await this.authService.validateToken(
+      userId,
+      headers['authorization'].split(' ')[1],
+    );
+    if (isValid) {
+      return this.lancamentosService.findAllByUserId(userId);
+    } else {
+      return;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/:userId')
+  async remove(
+    @Param('id') id: string,
+    @Param('userId') userId,
+    @Headers() headers,
+  ) {
+    const isValid = await this.authService.validateToken(
+      userId,
+      headers['authorization'].split(' ')[1],
+    );
+    if (isValid) {
+      return this.lancamentosService.remove(id);
+    } else {
+      return;
+    }
   }
 }
