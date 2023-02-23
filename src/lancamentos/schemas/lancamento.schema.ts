@@ -21,6 +21,9 @@ export class Lancamento {
   description: string;
 
   @Prop()
+  movimento: string;
+
+  @Prop()
   data: number;
 }
 

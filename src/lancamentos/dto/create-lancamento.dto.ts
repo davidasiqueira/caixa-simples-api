@@ -21,5 +21,9 @@ export class CreateLancamentoDto {
 
   @ApiProperty()
   @IsNotEmpty()
+  movimento: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
   data: number;
 }
