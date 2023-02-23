@@ -57,7 +57,7 @@ export class LancamentosController {
       headers['authorization'].split(' ')[1],
     );
     if (isValid) {
-      return this.lancamentosService.findByPeriod(
+      return await this.lancamentosService.findByPeriod(
         userId,
         initialDate,
         finalDate,

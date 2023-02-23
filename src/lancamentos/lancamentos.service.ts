@@ -20,17 +20,21 @@ export class LancamentosService {
     initialDate = 0,
     finalDate = 999999999999999,
   ) {
-    return this.LancamentoModel.find({
-      $and: [
-        { userId: userId },
-        {
-          $and: [
-            { date: { $gte: initialDate } },
-            { date: { $lte: finalDate } },
-          ],
-        },
-      ],
-    });
+    try {
+      return await this.LancamentoModel.find({
+        $and: [
+          { userId: userId },
+          {
+            $and: [
+              { date: { $gte: initialDate } },
+              { date: { $lte: finalDate } },
+            ],
+          },
+        ],
+      });
+    } catch (error) {
+      return error;
+    }
   }
 
   async remove(id: string) {
