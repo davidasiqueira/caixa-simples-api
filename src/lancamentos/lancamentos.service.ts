@@ -15,8 +15,22 @@ export class LancamentosService {
     return CreatedLancamento.save();
   }
 
-  async findAllByUserId(userId: string) {
-    return this.LancamentoModel.find({ userId: userId });
+  async findByPeriod(
+    userId: string,
+    initialDate = 0,
+    finalDate = 999999999999999,
+  ) {
+    return this.LancamentoModel.find({
+      $and: [
+        { userId: userId },
+        {
+          $and: [
+            { date: { $gte: initialDate } },
+            { date: { $lte: finalDate } },
+          ],
+        },
+      ],
+    });
   }
 
   async remove(id: string) {
