@@ -24,7 +24,7 @@ export class Lancamento {
   movimento: string;
 
   @Prop()
-  data: number;
+  date: number;
 }
 
 export const LancamentoSchema = SchemaFactory.createForClass(Lancamento);

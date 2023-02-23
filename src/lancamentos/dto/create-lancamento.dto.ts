@@ -25,5 +25,5 @@ export class CreateLancamentoDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  data: number;
+  date: number;
 }
