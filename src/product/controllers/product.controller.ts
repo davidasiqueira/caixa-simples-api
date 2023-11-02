@@ -33,40 +33,75 @@ export class ProductController {
     required: true,
     description: 'The code of the product',
   })
-  @Get(':code')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'The id of the user',
+  })
+  @Get('one/:code/:userId')
   async getProductByCode(
     @Param('code') code: string,
+    @Param('userId') userId,
     @Res() res: Response,
     @Headers() headers,
   ) {
     const isValid = await this.authService.validateToken(
-      null,
+      userId,
       headers['authorization'].split(' ')[1],
     );
     if (!isValid)
       return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
 
-    const product = await this.productService.getByCode(Number(code));
+    const product = await this.productService.getByCode(Number(code), userId);
     if (!product) return res.status(HttpStatus.NOT_FOUND).json({});
-    return res.status(HttpStatus.FOUND).json(product);
+    return res.status(HttpStatus.OK).json(product);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post()
-  async createProduct(
-    @Body() productDto: ProductDto,
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'The id of the user',
+  })
+  @Get('/all/:userId')
+  async getAllProducts(
+    @Param('userId') userId,
     @Res() res: Response,
     @Headers() headers,
   ) {
     const isValid = await this.authService.validateToken(
-      null,
+      userId,
+      headers['authorization'].split(' ')[1],
+    );
+    if (!isValid)
+      return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
+    const products = await this.productService.getAllProducts(userId);
+    if (!products) return res.status(HttpStatus.NOT_FOUND).json({});
+    return res.status(HttpStatus.OK).json(products);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'The id of the user',
+  })
+  @Post(':userId')
+  async createProduct(
+    @Body() productDto: ProductDto,
+    @Res() res: Response,
+    @Param('userId') userId,
+    @Headers() headers,
+  ) {
+    const isValid = await this.authService.validateToken(
+      userId,
       headers['authorization'].split(' ')[1],
     );
     if (!isValid)
       return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
 
     await this.productService.createProduct(productDto);
-    return res.status(HttpStatus.CREATED).send();
+    return res.status(HttpStatus.OK).send();
   }
 
   @UseGuards(JwtAuthGuard)
@@ -75,44 +110,60 @@ export class ProductController {
     required: true,
     description: 'The code of the product',
   })
-  @Patch(':code')
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'The id of the user',
+  })
+  @Patch(':code/:userId')
   async updateProduct(
     @Param('code') code: string,
+    @Param('userId') userId,
     @Body() updateProductDto: UpdateProductDto,
     @Res() res: Response,
     @Headers() headers,
   ) {
     const isValid = await this.authService.validateToken(
-      null,
+      userId,
       headers['authorization'].split(' ')[1],
     );
     if (!isValid)
       return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
 
-    await this.productService.updateProduct(updateProductDto, Number(code));
-    return res.status(HttpStatus.NO_CONTENT).send();
+    await this.productService.updateProduct(
+      updateProductDto,
+      Number(code),
+      userId,
+    );
+    return res.status(HttpStatus.OK).send();
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiParam({
+    name: 'userId',
+    required: true,
+    description: 'The id of the user',
+  })
   @ApiParam({
     name: 'code',
     required: true,
     description: 'The code of the product',
   })
-  @Delete(':code')
+  @Delete(':code/:userId')
   async deleteProduct(
     @Param('code') code: string,
+    @Param('userId') userId,
     @Res() res: Response,
     @Headers() headers,
   ) {
     const isValid = await this.authService.validateToken(
-      null,
+      userId,
       headers['authorization'].split(' ')[1],
     );
     if (!isValid)
       return res.status(HttpStatus.UNAUTHORIZED).send('Unauthorized');
 
-    await this.productService.deleteProduct(Number(code));
-    return res.status(HttpStatus.NO_CONTENT).send();
+    await this.productService.deleteProduct(Number(code), userId);
+    return res.status(HttpStatus.OK).send();
   }
 }

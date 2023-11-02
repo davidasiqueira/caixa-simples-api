@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from '../schemas/product.schema';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { ProductDto, UpdateProductDto } from '../dtos/produt.dto';
 
 @Injectable()
@@ -11,8 +11,12 @@ export class ProductService {
     private readonly productModel: Model<ProductDocument>,
   ) {}
 
-  async getByCode(code: number): Promise<Product> {
-    return this.productModel.findOne({ productCode: code });
+  async getByCode(code: number, userId: ObjectId): Promise<Product> {
+    return this.productModel.findOne({ productCode: code, userId: userId });
+  }
+
+  async getAllProducts(userId: ObjectId): Promise<Product[]> {
+    return this.productModel.find({ userId: userId });
   }
 
   async createProduct(productDto: ProductDto): Promise<Product> {
@@ -41,16 +45,20 @@ export class ProductService {
   async updateProduct(
     updateProductDto: UpdateProductDto,
     code: number,
+    userId: ObjectId,
   ): Promise<void> {
     const updatedProduct = await this.productModel.findOneAndUpdate(
-      { productCode: code },
+      { productCode: code, userId: userId },
       updateProductDto,
       { new: true },
     );
     if (!updatedProduct) throw new Error('Produto não atualizado');
   }
 
-  async deleteProduct(code: number): Promise<void> {
-    await this.productModel.findOneAndDelete({ productCode: code });
+  async deleteProduct(code: number, userId: ObjectId): Promise<void> {
+    await this.productModel.findOneAndDelete({
+      productCode: code,
+      userId: userId,
+    });
   }
 }
